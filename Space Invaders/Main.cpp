@@ -20,7 +20,7 @@ int VGCMain(const std::vector<std::string> &arguments) {
 void Start_Game() {
 	Game game(WINDOW_SIZE_X, WINDOW_SIZE_Y);
 
-	while (VGCVirtualGameConsole::beginLoop()) {
+	while (!game.gameOver && VGCVirtualGameConsole::beginLoop()) {
 		if (VGCDisplay::beginFrame()) {
 			game.RunFrame();
 			VGCDisplay::endFrame();

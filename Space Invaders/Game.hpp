@@ -12,13 +12,13 @@ public:
 	Game(const int sizeX, const int sizeY);
 	~Game();
 
+	bool gameOver = false;
+
 	void RunFrame();
 	bool CheckCollision(std::string spriteA, VGCVector posA, std::string spriteB, VGCVector posB);
 	bool CheckIfBulletHitEnemy(Bullet bullet);
 
 private:
-	bool gameOver = false;
-
 	int score = 0;
 
 	double lastSpawn = 0.0;

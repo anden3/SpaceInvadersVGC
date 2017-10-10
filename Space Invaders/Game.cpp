@@ -76,10 +76,9 @@ void Game::UpdateEnemies() {
 			enemyBullets.push_back(enemy->Fire(currentTime));
 		}
 
-		// Instead of moving diagonally in one step, it moves first one step to the side, and then one step down in order to make it slower.
-
 		VGCVector newPos = enemy->position;
 
+		// Instead of moving diagonally in one step, it moves first one step to the side, and then one step down in order to make it slower.
 		if (enemy->lastMoveDown) {
 			newPos.setX(newPos.getX() + enemy->direction.getX());
 		}
@@ -97,11 +96,11 @@ void Game::UpdateEnemies() {
 			enemy->position.setX(enemy->position.getX() + enemy->direction.getX());
 		}
 
+		// Check if enemy is out of bounds.
 		if (newPos.getY() < windowSize.getY()) {
 			enemy->position.setY(newPos.getY());
 		}
 		else {
-			// Delete the enemy if it has gone out of bounds.
 			enemy = enemies.erase(enemy);
 			continue;
 		}
@@ -139,6 +138,7 @@ void Game::UpdateEnemies() {
 	}
 
 	if (player.life <= 0) {
+		player.life = 0;
 		gameOver = true;
 		return;
 	}
@@ -167,6 +167,16 @@ void Game::Draw() {
 	}
 
 	VGCDisplay::renderImage(sprites["player"], { 0, 0 }, player.position, { 0, 0 });
+
+	VGCDisplay::renderString(
+		font, "Life: " + std::to_string(player.life), VGCColor(255, 255, 0, 0),
+		VGCVector(0, 0), VGCAdjustment(0, 0)
+	);
+
+	VGCDisplay::renderString(
+		font, "Score: " + std::to_string(score), VGCColor(255, 255, 0, 0),
+		VGCVector(windowSize.getX(), 0), VGCAdjustment(1, 0)
+	);
 }
 
 void Game::SpawnEnemy() {
