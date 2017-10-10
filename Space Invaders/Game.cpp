@@ -168,7 +168,8 @@ void Game::Draw() {
 	}
 
 	for (auto const &enemy : enemies) {
-		VGCDisplay::renderImage(sprites[enemy.spriteName], { 0, 0 }, enemy.position, { 0, 0 });
+		// VGCDisplay::renderImage(sprites[enemy.spriteName], { 0, 0 }, enemy.position, { 0, 0 });
+		enemy.Draw();
 	}
 
 	VGCDisplay::renderImage(sprites["player"], { 0, 0 }, player.position, { 0, 0 });

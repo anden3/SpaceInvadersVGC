@@ -4,7 +4,7 @@
 
 #include <string>
 
-#include <VirtualGameConsole/VGCVector.h>
+#include <VirtualGameConsole/VGCDisplay.h>
 
 static const int ENEMY_COLLISION_DAMAGE = 10;
 static const double ENEMY_EXPLOSION_DURATION = 1.0;
@@ -30,6 +30,9 @@ public:
 
 	std::string spriteName = "enemy";
 
+	VGCColor color = VGCColor(255, 0, 0, 255);
+	VGCVector size = VGCVector(32, 32);
+
 	VGCVector position;
 	VGCVector direction;
 
@@ -43,4 +46,6 @@ public:
 		lastFire = time;
 		return Bullet(VGCVector(position), VGCVector(0, 1), bulletDamage);
 	}
+
+	void Draw() const;
 };

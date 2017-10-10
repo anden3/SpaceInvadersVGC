@@ -5,7 +5,6 @@
 #include <map>
 
 #include <VirtualGameConsole/VGCClock.h>
-#include <VirtualGameConsole/VGCDisplay.h>
 #include <VirtualGameConsole/VGCKeyboard.h>
 
 static const int BULLET_SPEED = 2;

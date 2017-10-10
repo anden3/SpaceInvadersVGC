@@ -5,8 +5,6 @@
 
 #include <map>
 
-#include <VirtualGameConsole/VGCDisplay.h>
-
 class Game {
 public:
 	Game(const int sizeX, const int sizeY);
