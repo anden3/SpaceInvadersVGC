@@ -28,7 +28,6 @@ Player::Player(Game* game, VGCImage& sprite, VGCVector position, VGCVector bound
 	this->boundaries = boundaries;
 
 	size = { VGCDisplay::getWidth(sprite), VGCDisplay::getHeight(sprite) };
-	padding = { size.getX() / 2, size.getY() / 2 };
 }
 
 void Player::Update() {
@@ -63,11 +62,11 @@ void Player::Update() {
 	}
 
 	// Boundary collision detection.
-	if (newPos.getX() >= padding.getX() && newPos.getX() < (boundaries.getX() - padding.getX())) {
+	if (newPos.getX() >= 0 && newPos.getX() < (boundaries.getX() - size.getX())) {
 		position.setX(newPos.getX());
 	}
 
-	if (newPos.getY() >= padding.getY() && newPos.getY() < (boundaries.getY() - padding.getY())) {
+	if (newPos.getY() >= 0 && newPos.getY() < (boundaries.getY() - size.getY())) {
 		position.setY(newPos.getY());
 	}
 }

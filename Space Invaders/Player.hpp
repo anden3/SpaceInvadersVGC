@@ -25,6 +25,5 @@ private:
 	Game* game;
 
 	VGCVector size;
-	VGCVector padding;
 	VGCVector boundaries;
 };

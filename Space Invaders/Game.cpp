@@ -76,9 +76,6 @@ void Game::UpdateEnemies() {
 			enemyBullets.push_back(enemy->Fire(currentTime));
 		}
 
-		static int spritePadX = spriteSizes["enemy"].getX() / 2;
-		static int spritePadY = spriteSizes["enemy"].getY() / 2;
-
 		// Instead of moving diagonally in one step, it moves first one step to the side, and then one step down in order to make it slower.
 
 		VGCVector newPos = enemy->position;
@@ -92,7 +89,7 @@ void Game::UpdateEnemies() {
 
 		enemy->lastMoveDown = !enemy->lastMoveDown;
 
-		if (newPos.getX() >= spritePadX && newPos.getX() < (windowSize.getX() - spritePadX)) {
+		if (newPos.getX() >= 0 && newPos.getX() < (windowSize.getX() - spriteSizes[enemy->spriteName].getX())) {
 			enemy->position.setX(newPos.getX());
 		}
 		else {
@@ -100,7 +97,7 @@ void Game::UpdateEnemies() {
 			enemy->position.setX(enemy->position.getX() + enemy->direction.getX());
 		}
 
-		if (newPos.getY() < (windowSize.getY() + spritePadY)) {
+		if (newPos.getY() < windowSize.getY()) {
 			enemy->position.setY(newPos.getY());
 		}
 		else {
@@ -158,42 +155,43 @@ void Game::Draw() {
 	VGCDisplay::clear(backgroundColor);
 
 	for (auto const &bullet : enemyBullets) {
-		VGCDisplay::renderImage(sprites["bullet"], { 0, 0 }, bullet.position, { 0.5, 0.5 });
+		VGCDisplay::renderImage(sprites["bullet"], { 0, 0 }, bullet.position, { 0, 0 });
 	}
 
 	for (auto const &bullet : player.bullets) {
-		VGCDisplay::renderImage(sprites["bullet"], { 0, 0 }, bullet.position, { 0.5, 0.5 });
+		VGCDisplay::renderImage(sprites["bullet"], { 0, 0 }, bullet.position, { 0, 0 });
 	}
 
 	for (auto const &enemy : enemies) {
-		VGCDisplay::renderImage(sprites[enemy.spriteName], { 0, 0 }, enemy.position, { 0.5, 0.5 });
+		VGCDisplay::renderImage(sprites[enemy.spriteName], { 0, 0 }, enemy.position, { 0, 0 });
 	}
 
-	VGCDisplay::renderImage(sprites["player"], { 0, 0 }, player.position, { 0.5, 0.5 });
+	VGCDisplay::renderImage(sprites["player"], { 0, 0 }, player.position, { 0, 0 });
 }
 
 void Game::SpawnEnemy() {
 	// Make sure that the enemy doesn't spawn clipping the window boundaries.
-	int spawnX = VGCRandomizer::getInt(spriteSizes["enemy"].getX() / 2, windowSize.getX() - (spriteSizes["enemy"].getX() / 2) - 1);
+	int spawnX = VGCRandomizer::getInt(0, windowSize.getX() - spriteSizes["enemy"].getX() - 1);
 	int xDirection = VGCRandomizer::getBool(0.5) ? 1 : -1;
 
-	enemies.emplace_back(VGCVector(spawnX, -(spriteSizes["enemy"].getY()) / 2), VGCVector(xDirection, 1));
+	enemies.emplace_back(VGCVector(spawnX, -(spriteSizes["enemy"].getY())), VGCVector(xDirection, 1));
 }
 
 bool Game::CheckCollision(std::string spriteA, VGCVector posA, std::string spriteB, VGCVector posB) {
-	// Get the coordinates of top-left corner of sprites.
-	VGCVector aOrigin = posA - VGCVector(spriteSizes[spriteA].getX() / 2, spriteSizes[spriteA].getY() / 2);
-	VGCVector bOrigin = posB - VGCVector(spriteSizes[spriteB].getX() / 2, spriteSizes[spriteB].getY() / 2);
-
 	// Source of algorithm: https://gamedev.stackexchange.com/a/587
-	return (std::abs(aOrigin.getX() - bOrigin.getX()) * 2 < (spriteSizes[spriteA].getX() + spriteSizes[spriteB].getX()) &&
-		    std::abs(aOrigin.getY() - bOrigin.getY()) * 2 < (spriteSizes[spriteA].getY() + spriteSizes[spriteB].getY()));
+	return (std::abs(posA.getX() - posB.getX()) * 2 < (spriteSizes[spriteA].getX() + spriteSizes[spriteB].getX()) &&
+		    std::abs(posA.getY() - posB.getY()) * 2 < (spriteSizes[spriteA].getY() + spriteSizes[spriteB].getY()));
 }
 
 bool Game::CheckIfBulletHitEnemy(Bullet bullet) {
 	auto enemy = enemies.begin();
 
 	while (enemy != enemies.end()) {
+		if (enemy->blownUp) {
+			++enemy;
+			continue;
+		}
+
 		if (CheckCollision("bullet", bullet.position, "enemy", enemy->position)) {
 			enemy->BlowUp(VGCClock::getTime());
 			score += enemy->value;
