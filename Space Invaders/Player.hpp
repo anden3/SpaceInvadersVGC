@@ -10,7 +10,7 @@ class VGCImage;
 class Player {
 public:
 	Player() {}
-	Player(Game* game, VGCImage& sprite, VGCVector position, VGCVector boundaries);
+	Player(Game* game, VGCVector size, VGCVector position);
 
 	int life = 100;
 	VGCVector position;
@@ -25,5 +25,4 @@ private:
 	Game* game;
 
 	VGCVector size;
-	VGCVector boundaries;
 };

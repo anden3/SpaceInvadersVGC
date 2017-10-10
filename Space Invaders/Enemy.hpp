@@ -14,8 +14,7 @@ static const double ENEMY_EXPLOSION_DURATION = 1.0;
 class Enemy {
 public:
 	Enemy(VGCVector position, VGCVector direction) :
-		position(position), direction(direction)
-	{}
+		position(position), direction(direction) {}
 
 	bool blownUp = false;
 

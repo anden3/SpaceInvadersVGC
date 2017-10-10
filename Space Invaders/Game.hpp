@@ -14,6 +14,8 @@ public:
 
 	bool gameOver = false;
 
+	VGCVector windowSize;
+
 	void RunFrame();
 	bool CheckCollision(std::string spriteA, VGCVector posA, std::string spriteB, VGCVector posB);
 	bool CheckIfBulletHitEnemy(Bullet bullet);
@@ -33,8 +35,6 @@ private:
 
 	std::map<std::string, VGCImage> sprites;
 	std::map<std::string, VGCVector> spriteSizes;
-
-	VGCVector windowSize;
 
 	// Black background.
 	const VGCColor backgroundColor = VGCColor(255, 0, 0, 0);

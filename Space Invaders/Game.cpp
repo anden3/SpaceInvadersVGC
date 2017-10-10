@@ -37,7 +37,7 @@ Game::Game(const int sizeX, const int sizeY) {
 	}
 
 	// Start player in center of screen.
-	player = Player(this, sprites["player"], { sizeX / 2, sizeY / 2 }, { sizeX, sizeY });
+	player = Player(this, spriteSizes["player"], { sizeX / 2, sizeY / 2 });
 }
 
 Game::~Game() {

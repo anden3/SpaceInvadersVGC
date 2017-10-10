@@ -22,13 +22,8 @@ static const VGCVector BulletDirections[3] = {
 	{-1, -1}, {0, -1}, {1, -1}
 };
 
-Player::Player(Game* game, VGCImage& sprite, VGCVector position, VGCVector boundaries) {
-	this->game = game;
-	this->position = position;
-	this->boundaries = boundaries;
-
-	size = { VGCDisplay::getWidth(sprite), VGCDisplay::getHeight(sprite) };
-}
+Player::Player(Game* game, VGCVector size, VGCVector position)
+	: game(game), size(size), position(position) {}
 
 void Player::Update() {
 	auto bullet = bullets.begin();
@@ -62,11 +57,11 @@ void Player::Update() {
 	}
 
 	// Boundary collision detection.
-	if (newPos.getX() >= 0 && newPos.getX() < (boundaries.getX() - size.getX())) {
+	if (newPos.getX() >= 0 && newPos.getX() < (game->windowSize.getX() - size.getX())) {
 		position.setX(newPos.getX());
 	}
 
-	if (newPos.getY() >= 0 && newPos.getY() < (boundaries.getY() - size.getY())) {
+	if (newPos.getY() >= 0 && newPos.getY() < (game->windowSize.getY() - size.getY())) {
 		position.setY(newPos.getY());
 	}
 }
