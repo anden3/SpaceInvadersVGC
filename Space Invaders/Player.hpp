@@ -12,7 +12,7 @@ public:
 	Player() {}
 	Player(Game* game, VGCVector size, VGCVector position);
 
-	int life = 100;
+	int health = 100;
 	VGCVector position;
 
 	std::vector<Bullet> bullets;
@@ -23,6 +23,5 @@ private:
 	double lastFire = 0.0;
 
 	Game* game;
-
 	VGCVector size;
 };

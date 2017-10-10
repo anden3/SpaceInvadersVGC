@@ -9,6 +9,7 @@
 #include <VirtualGameConsole/VGCKeyboard.h>
 
 static const int BULLET_SPEED = 2;
+static const int BULLET_DAMAGE = 10;
 static const double BULLET_FIRE_RATE = 0.2;
 
 static const std::map<VGCKey, VGCVector> MovementKeys = {
@@ -44,7 +45,8 @@ void Player::Update() {
 
 		// Pew pew pew.
 		for (auto const &dir : BulletDirections) {
-			bullets.emplace_back(position, dir);
+			VGCVector playerFrontCenter = position + VGCVector(size.getX() / 2, 0);
+			bullets.emplace_back(playerFrontCenter, dir, BULLET_DAMAGE);
 		}
 	}
 

@@ -6,9 +6,7 @@
 
 #include <VirtualGameConsole/VGCVector.h>
 
-static const int ENEMY_BULLET_DAMAGE = 5;
 static const int ENEMY_COLLISION_DAMAGE = 10;
-
 static const double ENEMY_EXPLOSION_DURATION = 1.0;
 
 class Enemy {
@@ -27,6 +25,8 @@ public:
 	double blownUpTime = 0.0;
 
 	int value = 100;
+	int health = 10;
+	int bulletDamage = 5;
 
 	std::string spriteName = "enemy";
 
@@ -41,6 +41,6 @@ public:
 
 	Bullet Fire(double time) {
 		lastFire = time;
-		return Bullet(VGCVector(position), VGCVector(0, 1));
+		return Bullet(VGCVector(position), VGCVector(0, 1), bulletDamage);
 	}
 };

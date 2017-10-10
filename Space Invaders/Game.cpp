@@ -107,14 +107,19 @@ void Game::UpdateEnemies() {
 
 		// Check if enemy has collided with the player.
 		if (CheckCollision("player", player.position, "enemy", enemy->position)) {
-			enemy->BlowUp(currentTime);
-			score += enemy->value;
-			player.life -= ENEMY_COLLISION_DAMAGE;
+			player.health -= ENEMY_COLLISION_DAMAGE;
+			enemy->health -= ENEMY_COLLISION_DAMAGE;
+
+			if (enemy->health <= 0) {
+				enemy->BlowUp(currentTime);
+				score += enemy->value;
+			}
 		}
 
 		++enemy;
 	}
 
+	// Iterate through the enemy bullets.
 	auto bullet = enemyBullets.begin();
 
 	while (bullet != enemyBullets.end()) {
@@ -128,7 +133,7 @@ void Game::UpdateEnemies() {
 
 		// Check player intersection.
 		if (CheckCollision("player", player.position, "bullet", bullet->position)) {
-			player.life -= ENEMY_BULLET_DAMAGE;
+			player.health -= bullet->damage;
 
 			bullet = enemyBullets.erase(bullet);
 			continue;
@@ -137,8 +142,8 @@ void Game::UpdateEnemies() {
 		++bullet;
 	}
 
-	if (player.life <= 0) {
-		player.life = 0;
+	if (player.health <= 0) {
+		player.health = 0;
 		gameOver = true;
 		return;
 	}
@@ -169,7 +174,7 @@ void Game::Draw() {
 	VGCDisplay::renderImage(sprites["player"], { 0, 0 }, player.position, { 0, 0 });
 
 	VGCDisplay::renderString(
-		font, "Life: " + std::to_string(player.life), VGCColor(255, 255, 0, 0),
+		font, "Life: " + std::to_string(player.health), VGCColor(255, 255, 0, 0),
 		VGCVector(0, 0), VGCAdjustment(0, 0)
 	);
 
@@ -217,8 +222,13 @@ bool Game::CheckIfBulletHitEnemy(Bullet bullet) {
 		}
 
 		if (CheckCollision("bullet", bullet.position, "enemy", enemy->position)) {
-			enemy->BlowUp(VGCClock::getTime());
-			score += enemy->value;
+			enemy->health -= bullet.damage;
+
+			if (enemy->health <= 0) {
+				enemy->BlowUp(VGCClock::getTime());
+				score += enemy->value;
+			}
+
 			return true;
 		}
 
