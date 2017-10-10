@@ -178,9 +178,23 @@ void Game::SpawnEnemy() {
 }
 
 bool Game::CheckCollision(std::string spriteA, VGCVector posA, std::string spriteB, VGCVector posB) {
-	// Source of algorithm: https://gamedev.stackexchange.com/a/587
-	return (std::abs(posA.getX() - posB.getX()) * 2 < (spriteSizes[spriteA].getX() + spriteSizes[spriteB].getX()) &&
-		    std::abs(posA.getY() - posB.getY()) * 2 < (spriteSizes[spriteA].getY() + spriteSizes[spriteB].getY()));
+	if (posA.getX() > (posB.getX() + spriteSizes[spriteB].getX())) {
+		return false;
+	}
+
+	if ((posA.getX() + spriteSizes[spriteA].getX()) < posB.getX()) {
+		return false;
+	}
+
+	if (posA.getY() > (posB.getY() + spriteSizes[spriteB].getY())) {
+		return false;
+	}
+
+	if ((posA.getY() + spriteSizes[spriteA].getY()) < posB.getY()) {
+		return false;
+	}
+
+	return true;
 }
 
 bool Game::CheckIfBulletHitEnemy(Bullet bullet) {
