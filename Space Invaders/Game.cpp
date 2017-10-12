@@ -222,22 +222,22 @@ void Game::SpawnEnemy() {
 		);
 	}
 	else if (enemyName == "arcEnemy") {
-		newEnemy = static_cast<Enemy*>(new ArcEnemy(
+		newEnemy = new ArcEnemy(
 			VGCVector(spawnX, -(spriteSizes["arcEnemy"].getY())), VGCVector(xDirection, 1),
 			&sprites["arcEnemy"], &sprites["explosion"]
-		));
+		);
 	}
 	else if (enemyName == "tankEnemy") {
-		newEnemy = static_cast<Enemy*>(new TankEnemy(
+		newEnemy = new TankEnemy(
 			VGCVector(spawnX, -(spriteSizes["tankEnemy"].getY())), VGCVector(xDirection, 1),
 			&sprites["tankEnemy"], &sprites["explosion"]
-		));
+		);
 	}
 	else if (enemyName == "quickEnemy") {
-		newEnemy = static_cast<Enemy*>(new QuickEnemy(
+		newEnemy = new QuickEnemy(
 			VGCVector(spawnX, -(spriteSizes["quickEnemy"].getY())), VGCVector(xDirection, 1),
 			&sprites["quickEnemy"], &sprites["explosion"]
-		));
+		);
 	}
 
 	enemies.push_back(newEnemy);
