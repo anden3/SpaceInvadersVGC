@@ -7,7 +7,9 @@
 #include <VirtualGameConsole/VGCClock.h>
 #include <VirtualGameConsole/VGCKeyboard.h>
 
-static const int BULLET_SPEED = 2;
+static const int PLAYER_SPEED = 5;
+static const int BULLET_SPEED = 10;
+
 static const int BULLET_DAMAGE = 10;
 static const double BULLET_FIRE_RATE = 0.2;
 
@@ -29,7 +31,7 @@ void Player::Update() {
 	auto bullet = bullets.begin();
 
 	while (bullet != bullets.end()) {
-		bullet->position += bullet->direction * BULLET_SPEED;
+		bullet->position += bullet->direction * bullet->speed;
 
 		if (game->CheckIfBulletHitEnemy(*bullet)) {
 			bullet = bullets.erase(bullet);
@@ -45,7 +47,7 @@ void Player::Update() {
 		// Pew pew pew.
 		for (auto const &dir : BulletDirections) {
 			VGCVector playerFrontCenter = position + VGCVector(size.getX() / 2, 0);
-			bullets.emplace_back(playerFrontCenter, dir, BULLET_DAMAGE);
+			bullets.emplace_back(playerFrontCenter, dir, BULLET_DAMAGE, BULLET_SPEED);
 		}
 	}
 
@@ -53,7 +55,7 @@ void Player::Update() {
 
 	for (auto const &key : MovementKeys) {
 		if (VGCKeyboard::isPressed(key.first)) {
-			newPos += key.second;
+			newPos += key.second * PLAYER_SPEED;
 		}
 	}
 

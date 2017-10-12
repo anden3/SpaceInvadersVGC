@@ -4,7 +4,7 @@
 
 static const int WINDOW_SIZE_X = 512;
 static const int WINDOW_SIZE_Y = 512;
-static const double WAIT_TIME = 1 / 60;
+static const double WAIT_TIME = 1.0 / 60.0;
 
 void Start_Game();
 

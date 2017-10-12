@@ -24,12 +24,14 @@ private:
 	double lastSpawn = 0.0;
 
 	Player player;
-	std::vector<Enemy> enemies;
+	VGCFont font;
+
+	std::vector<Enemy*> enemies;
 
 	std::vector<Bullet> enemyBullets;
 	std::vector<Bullet> playerBullets;
 
-	VGCFont font;
+	std::map<std::string, float> enemyTypes;
 
 	std::map<std::string, VGCImage> sprites;
 	std::map<std::string, VGCVector> spriteSizes;

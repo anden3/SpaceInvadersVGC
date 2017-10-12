@@ -23,11 +23,23 @@ Game::Game(const int sizeX, const int sizeY) {
 
 	font = VGCDisplay::openFont("Times New Roman", FONT_SIZE);
 
+	// The floats are the probability of those types spawning.
+	enemyTypes = {
+		{"enemy",		0.60f},
+		{"arcEnemy",	0.10f},
+		{"tankEnemy",	0.15f},
+		{"quickEnemy",	0.15f}
+	};
+
 	sprites = {
-		{"enemy",		VGCDisplay::openImage("resources/Enemy.png",     1, 1)},
-		{"bullet",		VGCDisplay::openImage("resources/Bullet.png",    1, 1)},
-		{"player",		VGCDisplay::openImage("resources/Ship.png",      1, 1)},
-		{"explosion",	VGCDisplay::openImage("resources/Explosion.png", 1, 1)}
+		{"enemy",		VGCDisplay::openImage("resources/Enemy.png",		1, 1)},
+		{"arcEnemy",	VGCDisplay::openImage("resources/ArcEnemy.png",		1, 1)},
+		{"tankEnemy",	VGCDisplay::openImage("resources/TankEnemy.png",	1, 1)},
+		{"quickEnemy",	VGCDisplay::openImage("resources/QuickEnemy.png",	1, 1)},
+
+		{"bullet",		VGCDisplay::openImage("resources/Bullet.png",		1, 1)},
+		{"player",		VGCDisplay::openImage("resources/Ship.png",			1, 1)},
+		{"explosion",	VGCDisplay::openImage("resources/Explosion.png",	1, 1)}
 	};
 
 	for (auto const &sprite : sprites) {
@@ -56,39 +68,34 @@ void Game::RunFrame() {
 }
 
 void Game::UpdateEnemies() {
-	auto enemy = enemies.begin();
+	auto it = enemies.begin();
 
-	while (enemy != enemies.end()) {
+	while (it != enemies.end()) {
+		Enemy* enemy = *it;
+
 		double currentTime = VGCClock::getTime();
 
 		if (enemy->blownUp) {
 			if (currentTime - enemy->blownUpTime >= ENEMY_EXPLOSION_DURATION) {
-				enemy = enemies.erase(enemy);
+				delete enemy;
+				it = enemies.erase(it);
 			}
 			else {
-				++enemy;
+				++it;
 			}
 			
 			continue;
 		}
 
 		if ((currentTime - enemy->lastFire) >= ENEMY_FIRE_RATE) {
-			enemyBullets.push_back(enemy->Fire(currentTime));
+			for (auto &bullet : enemy->Fire(currentTime)) {
+				enemyBullets.push_back(bullet);
+			}
 		}
 
-		VGCVector newPos = enemy->position;
+		VGCVector newPos = enemy->position + (enemy->direction * enemy->GetSpeed());
 
-		// Instead of moving diagonally in one step, it moves first one step to the side, and then one step down in order to make it slower.
-		if (enemy->lastMoveDown) {
-			newPos.setX(newPos.getX() + enemy->direction.getX());
-		}
-		else {
-			newPos.setY(newPos.getY() + enemy->direction.getY());
-		}
-
-		enemy->lastMoveDown = !enemy->lastMoveDown;
-
-		if (newPos.getX() >= 0 && newPos.getX() < (windowSize.getX() - spriteSizes[enemy->spriteName].getX())) {
+		if (newPos.getX() >= 0 && newPos.getX() < (windowSize.getX() - spriteSizes[enemy->GetSpriteName()].getX())) {
 			enemy->position.setX(newPos.getX());
 		}
 		else {
@@ -101,29 +108,30 @@ void Game::UpdateEnemies() {
 			enemy->position.setY(newPos.getY());
 		}
 		else {
-			enemy = enemies.erase(enemy);
+			delete enemy;
+			it = enemies.erase(it);
 			continue;
 		}
 
 		// Check if enemy has collided with the player.
-		if (CheckCollision("player", player.position, "enemy", enemy->position)) {
+		if (CheckCollision("player", player.position, enemy->GetSpriteName(), enemy->position)) {
 			player.health -= ENEMY_COLLISION_DAMAGE;
-			enemy->health -= ENEMY_COLLISION_DAMAGE;
+			enemy->SetHealth(enemy->GetHealth() - ENEMY_COLLISION_DAMAGE);
 
-			if (enemy->health <= 0) {
+			if (enemy->GetHealth() <= 0) {
 				enemy->BlowUp(currentTime);
-				score += enemy->value;
+				score += enemy->GetValue();
 			}
 		}
 
-		++enemy;
+		++it;
 	}
 
 	// Iterate through the enemy bullets.
 	auto bullet = enemyBullets.begin();
 
 	while (bullet != enemyBullets.end()) {
-		bullet->position += bullet->direction;
+		bullet->position += bullet->direction * bullet->speed;
 
 		// Removing bullet if it has gone off-screen.
 		if (bullet->position.getY() >= windowSize.getY()) {
@@ -168,8 +176,7 @@ void Game::Draw() {
 	}
 
 	for (auto const &enemy : enemies) {
-		// VGCDisplay::renderImage(sprites[enemy.spriteName], { 0, 0 }, enemy.position, { 0, 0 });
-		enemy.Draw();
+		enemy->Draw();
 	}
 
 	VGCDisplay::renderImage(sprites["player"], { 0, 0 }, player.position, { 0, 0 });
@@ -186,11 +193,54 @@ void Game::Draw() {
 }
 
 void Game::SpawnEnemy() {
+	float randomValue = VGCRandomizer::getFloat(0.0f, 1.0f);
+	std::string enemyName;
+
+	// This is to add up each probability value to determine the interval.
+	float lowerBound = 0.0f;
+
+	for (auto const &type : enemyTypes) {
+		float higherBound = lowerBound + type.second;
+
+		if (randomValue >= lowerBound && randomValue < higherBound) {
+			enemyName = type.first;
+		}
+
+		lowerBound += type.second;
+	}
+
 	// Make sure that the enemy doesn't spawn clipping the window boundaries.
-	int spawnX = VGCRandomizer::getInt(0, windowSize.getX() - spriteSizes["enemy"].getX() - 1);
+	int spawnX = VGCRandomizer::getInt(0, windowSize.getX() - spriteSizes[enemyName].getX() - 1);
 	int xDirection = VGCRandomizer::getBool(0.5) ? 1 : -1;
 
-	enemies.emplace_back(VGCVector(spawnX, -(spriteSizes["enemy"].getY())), VGCVector(xDirection, 1));
+	Enemy* newEnemy = nullptr;
+
+	if (enemyName == "enemy") {
+		newEnemy = new BasicEnemy(
+			VGCVector(spawnX, -(spriteSizes["enemy"].getY())), VGCVector(xDirection, 1),
+			&sprites["enemy"], &sprites["explosion"]
+		);
+	}
+	else if (enemyName == "arcEnemy") {
+		newEnemy = static_cast<Enemy*>(new ArcEnemy(
+			VGCVector(spawnX, -(spriteSizes["arcEnemy"].getY())), VGCVector(xDirection, 1),
+			&sprites["arcEnemy"], &sprites["explosion"]
+		));
+	}
+	else if (enemyName == "tankEnemy") {
+		newEnemy = static_cast<Enemy*>(new TankEnemy(
+			VGCVector(spawnX, -(spriteSizes["tankEnemy"].getY())), VGCVector(xDirection, 1),
+			&sprites["tankEnemy"], &sprites["explosion"]
+		));
+	}
+	else if (enemyName == "quickEnemy") {
+		newEnemy = static_cast<Enemy*>(new QuickEnemy(
+			VGCVector(spawnX, -(spriteSizes["quickEnemy"].getY())), VGCVector(xDirection, 1),
+			&sprites["quickEnemy"], &sprites["explosion"]
+		));
+	}
+
+	enemies.push_back(newEnemy);
 }
 
 bool Game::CheckCollision(std::string spriteA, VGCVector posA, std::string spriteB, VGCVector posB) {
@@ -214,26 +264,28 @@ bool Game::CheckCollision(std::string spriteA, VGCVector posA, std::string sprit
 }
 
 bool Game::CheckIfBulletHitEnemy(Bullet bullet) {
-	auto enemy = enemies.begin();
+	auto it = enemies.begin();
 
-	while (enemy != enemies.end()) {
+	while (it != enemies.end()) {
+		Enemy* enemy = *it;
+
 		if (enemy->blownUp) {
-			++enemy;
+			++it;
 			continue;
 		}
 
-		if (CheckCollision("bullet", bullet.position, "enemy", enemy->position)) {
-			enemy->health -= bullet.damage;
+		if (CheckCollision("bullet", bullet.position, enemy->GetSpriteName(), enemy->position)) {
+			enemy->SetHealth(enemy->GetHealth() - bullet.damage);
 
-			if (enemy->health <= 0) {
+			if (enemy->GetHealth() <= 0) {
 				enemy->BlowUp(VGCClock::getTime());
-				score += enemy->value;
+				score += enemy->GetValue();
 			}
 
 			return true;
 		}
 
-		++enemy;
+		++it;
 	}
 
 	return false;
