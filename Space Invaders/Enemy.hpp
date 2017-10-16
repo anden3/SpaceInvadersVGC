@@ -5,8 +5,8 @@
 
 #include <VirtualGameConsole/VGCDisplay.h>
 
-static const int    ENEMY_COLLISION_DAMAGE = 10;
-static const double ENEMY_EXPLOSION_DURATION = 1.0;
+static const int    ENEMY_COLLISION_DAMAGE		= 10;
+static const double ENEMY_EXPLOSION_DURATION	= 1.0;
 
 struct Bullet;
 
@@ -35,14 +35,14 @@ public:
 	void BlowUp(double time);
 	void Draw() const;
 
-	virtual int				GetSpeed()		const = 0;
-	virtual int				GetValue()		const = 0;
-	virtual int				GetHealth()		const = 0;
-	virtual std::string		GetSpriteName() const = 0;
+	virtual int						GetSpeed()		const = 0;
+	virtual int						GetValue()		const = 0;
+	virtual int						GetHealth()		const = 0;
+	virtual std::string				GetSpriteName() const = 0;
 
-	virtual void			SetHealth(int health) = 0;
+	virtual void					SetHealth(int health) = 0;
 
-	virtual std::vector<Bullet> Fire(double time) = 0;
+	virtual std::vector<Bullet>		Fire(double time) = 0;
 
 private:
 	VGCImage* deadSprite;
@@ -56,12 +56,12 @@ public:
 	// Inherit the constructor.
 	using Enemy::Enemy;
 
-	int			GetSpeed()		const { return speed; }
-	int			GetValue()		const { return value; }
-	int			GetHealth()		const { return health; }
-	std::string GetSpriteName() const { return spriteName; }
+	int					GetSpeed()		const { return speed; }
+	int					GetValue()		const { return value; }
+	int					GetHealth()		const { return health; }
+	std::string			GetSpriteName() const { return spriteName; }
 
-	void		SetHealth(int health) { this->health = health; }
+	void				SetHealth(int health) { this->health = health; }
 
 	std::vector<Bullet> Fire(double time);
 
@@ -75,12 +75,12 @@ class ArcEnemy : public Enemy {
 public:
 	using Enemy::Enemy;
 
-	int			GetSpeed()		const { return speed; }
-	int			GetValue()		const { return value; }
-	int			GetHealth()		const { return health; }
-	std::string GetSpriteName() const { return spriteName; }
+	int					GetSpeed()		const { return speed; }
+	int					GetValue()		const { return value; }
+	int					GetHealth()		const { return health; }
+	std::string			GetSpriteName() const { return spriteName; }
 
-	void		SetHealth(int health) { this->health = health; }
+	void				SetHealth(int health) { this->health = health; }
 
 	std::vector<Bullet> Fire(double time);
 
@@ -94,18 +94,18 @@ class TankEnemy : public Enemy {
 public:
 	using Enemy::Enemy;
 
-	int			GetSpeed()		const { return speed; }
-	int			GetValue()		const { return value; }
-	int			GetHealth()		const { return health; }
-	std::string GetSpriteName() const { return spriteName; }
+	int					GetSpeed()		const { return speed; }
+	int					GetValue()		const { return value; }
+	int					GetHealth()		const { return health; }
+	std::string			GetSpriteName() const { return spriteName; }
 
-	void		SetHealth(int health) { this->health = health; }
+	void				SetHealth(int health) { this->health = health; }
 
 	std::vector<Bullet> Fire(double time);
 
 private:
-	int speed = 1;
-	int value = 200;
+	int speed  = 1;
+	int value  = 200;
 	int health = 30;
 
 	std::string spriteName = "tankEnemy";
@@ -115,12 +115,12 @@ class QuickEnemy : public Enemy {
 public:
 	using Enemy::Enemy;
 
-	int			GetSpeed()		const { return speed; }
-	int			GetValue()		const { return value; }
-	int			GetHealth()		const { return health; }
-	std::string GetSpriteName() const { return spriteName; }
+	int					GetSpeed()		const { return speed; }
+	int					GetValue()		const { return value; }
+	int					GetHealth()		const { return health; }
+	std::string			GetSpriteName() const { return spriteName; }
 
-	void		SetHealth(int health) { this->health = health; }
+	void				SetHealth(int health) { this->health = health; }
 
 	std::vector<Bullet> Fire(double time);
 

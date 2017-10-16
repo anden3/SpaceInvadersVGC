@@ -62,7 +62,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -102,8 +102,8 @@
     <LibraryPath>P:\lib;F:\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>F:\include;$(IncludePath)</IncludePath>
-    <LibraryPath>F:\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>P:\include;F:\include;$(IncludePath)</IncludePath>
+    <LibraryPath>P:\lib;F:\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release With Symbols|x64'">
     <IncludePath>F:\include;P:\include;$(IncludePath)</IncludePath>
